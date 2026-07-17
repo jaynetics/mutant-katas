@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Ruby + the ruby/ bundle are needed by the pre{test,build} hooks that compile
+      # katas/*.md -> JSON (the parser uses kramdown).
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .tool-versions
+          working-directory: ruby
+          bundler-cache: true
+      - run: npm ci
+      - run: npm test # bridge integration test self-skips when public/ruby.wasm is absent
+      - run: npm run build
+
+  katas:
+    # Ruby specs: the kata parser plus katas_spec, which validates every kata with
+    # real fork-based mutant + parity against the hybrid runner. Needs a Ruby whose
+    # built-in prism satisfies unparser (>= 4.0), matching .tool-versions.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .tool-versions
+          working-directory: ruby
+          bundler-cache: true
+      - name: Ruby specs (parser + kata validation)
+        working-directory: ruby
+        run: bundle exec rspec spec

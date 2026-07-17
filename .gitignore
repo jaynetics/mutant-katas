@@ -1,0 +1,11 @@
+node_modules/
+dist/
+*.wasm
+ruby/build/
+.DS_Store
+ruby/.tools/
+ruby/.stage/
+ruby/vendor/
+ruby/.bundle/
+ruby/rubies/
+src/katas/katas.json
