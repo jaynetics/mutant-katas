@@ -50,6 +50,18 @@ cp runner.rb "$STAGE/"
 cp -R stubs "$STAGE/"
 cp -R vendor "$STAGE/"
 
+# Strip compiled native extensions from the staged bundle. We ship pure-Ruby gems
+# only (prism is kept off the load path, io-console is stubbed, and racc/parser
+# fall back to their pure-Ruby cores). The wasm runtime cannot load a native ext,
+# but if one's filename matches what `require` searches for, loading it aborts
+# boot with `... unimplemented on this machine (NotImplementedError)` instead of
+# the LoadError that triggers the pure-Ruby fallback. This bites only on Linux
+# (CI): there `bundle install` builds `racc/cparse.so`, whose `.so` name the wasm
+# Ruby tries to load; on macOS the ext is a `.bundle`, which it ignores. Deleting
+# them makes the pack platform-independent (and much smaller).
+find "$STAGE/vendor" \( -name '*.so' -o -name '*.bundle' -o -name '*.o' \) -delete
+rm -rf "$STAGE"/vendor/bundle/ruby/*/extensions
+
 # 4. Deferred pack: layer /app onto the prebuilt base.
 mkdir -p ../public
 "$VFS" pack "$BASE" --mapdir /app::"$STAGE" -o "$OUT"
