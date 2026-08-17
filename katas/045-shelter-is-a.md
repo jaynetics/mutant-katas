@@ -1,7 +1,7 @@
 ---
 title: "Type checks"
 subject: "Shelter.accepts?"
-editable: [spec]
+editable: spec
 difficulty: 4
 concepts: [type-checks, subclasses, strict-apis]
 ---
@@ -38,8 +38,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Shelter, '.accepts?' do
   it "accepts an animal" do
@@ -58,4 +56,4 @@ end
 
 # explanation
 
-`is_a?` returns true for subclasses; `instance_of?` only for the exact class. Mutant swaps `is_a?` for `instance_of?`, and a spec that only tests a direct `Animal` still passes. Testing a `Dog` (a subclass) makes `is_a?` the required method. Strong tests make sure that the APIs used in the code have the right level of strictness.
+is_a? is also true for subclasses, while instance_of? is true only for the exact class. Mutant swaps is_a? for instance_of?, and an example that passes a plain Animal gives the same answer either way. Add an example with a Dog, so the spec makes clear which of the two checks the code needs. Mutation testing often enforces picking an API with the right level of "strictness".

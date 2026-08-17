@@ -1,7 +1,7 @@
 ---
 title: "Off-by-one ranges"
 subject: "Raffle#winner?"
-editable: [spec]
+editable: spec
 difficulty: 3
 concepts: [ranges, off-by-one, boundaries]
 ---
@@ -33,8 +33,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Raffle, '#winner?' do
   it "is true for a number in the range" do
@@ -51,4 +49,4 @@ end
 
 # explanation
 
-`(1..10)` includes both endpoints. The starting spec only checks a mid-range number and one far outside, so mutant's endpoint mutations survive: `1..` → `0..` (shifts the low bound) and `..@highest_winning` → `...@highest_winning` (drops the top winner). Test each boundary — the lowest and highest winning numbers, and the values just outside.
+`(1..10)` includes both ends. The spec checks a number in the middle and one far outside, so nothing pins the ends down. Mutant moves the lower bound to 0 or 2, and changes .. to ..., which drops the highest winner. Add examples for the lowest and highest winning numbers, and for the numbers just below and just above them.

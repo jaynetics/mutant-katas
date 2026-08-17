@@ -1,7 +1,7 @@
 ---
 title: "Nil handling"
 subject: "Profile#display_name"
-editable: [spec]
+editable: spec
 difficulty: 1
 concepts: [nil-handling, or-default]
 ---
@@ -32,8 +32,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Profile, '#display_name' do
   it "shows the nickname when present" do
@@ -48,4 +46,4 @@ end
 
 # explanation
 
-With a nickname always present, the right-hand side of `@nickname || "Anonymous"` never runs. This is a simple branch coverage example. Test the `nil` case.
+The sole example passes a nickname, so "Anonymous" is never returned. Mutant drops the fallback, or changes it to nil or "", and the spec still passes. Initialize a Profile with `nil` to trigger the fallback. This is a simple branch coverage example.

@@ -1,7 +1,7 @@
 ---
 title: "Equality vs identity"
 subject: "Color#=="
-editable: [spec]
+editable: spec
 difficulty: 2
 concepts: [equality, identity, value-objects]
 ---
@@ -39,8 +39,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Color, '#==' do
   it "a color equals itself" do
@@ -60,4 +58,4 @@ end
 
 # explanation
 
-The starting spec only compares a color to *itself* and to a clearly different color. It does not actually prove that two distinct color instances with the same hex value are considered equal.
+The starting spec only compares a Color to *itself* and to a clearly different color. It does not actually pin down the behavior of the code, which considers two distinct Color object with the same hex value as equal.

@@ -1,7 +1,7 @@
 ---
 title: "Boundary values"
 subject: "Person#adult?"
-editable: [spec]
+editable: spec
 difficulty: 2
 concepts: [boundary-values, equality-mutations]
 ---
@@ -35,8 +35,6 @@ end
 ```
 
 # solution
-
-## spec
 
 ```ruby
 RSpec.describe Person, '#adult?' do

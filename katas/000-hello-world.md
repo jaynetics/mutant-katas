@@ -1,7 +1,7 @@
 ---
 title: "Hello World"
 subject: "HelloWorld.call"
-editable: [spec]
+editable: spec
 difficulty: 1
 concepts: [coverage]
 ---
@@ -28,8 +28,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe HelloWorld, '.call' do
   it 'returns "hello world!"' do
@@ -40,4 +38,4 @@ end
 
 # explanation
 
-The expectation is commented out. This leaves the method uncovered. No change to the code will break the tests. That is bad. Uncomment the expectation to cover the method.
+The only expectation in the spec is commented out, so nothing checks what the method returns. Mutant can replace the string with `""` or `nil`, or delete the line altogether, and the spec still passes. Uncomment the expectation.

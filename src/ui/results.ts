@@ -21,9 +21,16 @@ export function renderResult(
 
   if (result.status === "red") {
     root.appendChild(el("div", "gate", "Your suite is red — make your tests pass first."));
-    const list = el("ul", "failures");
-    for (const f of result.failures) list.appendChild(el("li", "failure", f));
-    root.appendChild(list);
+    const failures = el("div", "failures");
+    for (const f of result.failures) {
+      const card = el("div", "failure");
+      card.appendChild(el("strong", "failure-title", f.description));
+      card.appendChild(el("code", "location", f.location));
+      // A <pre> so RSpec's own layout survives: expected/got alignment and its diff.
+      card.appendChild(el("pre", "failure-message", f.message));
+      failures.appendChild(card);
+    }
+    root.appendChild(failures);
     return { solved: false };
   }
 

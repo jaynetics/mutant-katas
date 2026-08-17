@@ -164,8 +164,31 @@ main {
   font-weight: 600;
   margin: 0.5rem 0;
 }
-.failures {
+.failure {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin: 0.5rem 0;
+}
+.failure-title {
+  display: block;
+  font-size: 0.9rem;
+}
+.failure .location {
+  display: block;
+  font-size: 0.78rem;
   color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+/* RSpec's message is pre-formatted; wrap long lines rather than clip them, and let
+   its diff scroll sideways if it has to. */
+.failure-message {
+  margin: 0;
+  font-size: 0.88rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  color: var(--fg);
 }
 .success {
   color: var(--ok);

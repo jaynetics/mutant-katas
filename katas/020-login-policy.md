@@ -1,7 +1,7 @@
 ---
 title: "Boolean logic"
 subject: "LoginPolicy#allow?"
-editable: [spec]
+editable: spec
 difficulty: 2
 concepts: [boolean-operators, truth-table]
 ---
@@ -30,8 +30,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe LoginPolicy, '#allow?' do
   it { expect(LoginPolicy.new(active: true, verified: true).allow?).to be(true) }
@@ -43,4 +41,4 @@ end
 
 # explanation
 
-The starting spec only checks the two cases where both inputs agree (`true/true` and `false/false`). For those, `&&` and `||` behave identically — and dropping either operand also passes. Mutant keeps the `@active`, `@verified`, and `@active || @verified` mutations alive. Only by testing the mixed cases (`true/false` and `false/true`), where the operator actually matters, do you cover the behavior of `&&` precisely.
+The spec only covers the two cases where both flags agree, true/true and false/false. For those, &&, ||, @active on its own and @verified on its own all give the same answers, allowing for three mutations. Cover the mixed cases, true/false and false/true, where the choice of boolean operator does affect the result.

@@ -50,8 +50,10 @@ export async function bootRuntime(wasmBytes: ArrayBuffer): Promise<Runtime> {
     async runKata({ source, spec, subject }) {
       const code =
         `Runner.call(` +
-        `source: ${JSON.stringify(toBase64(source))}.unpack1("m"), ` +
-        `spec: ${JSON.stringify(toBase64(spec))}.unpack1("m").gsub(/^require_relative.*\\n/, ""), ` +
+        `source: ${JSON.stringify(toBase64(source))}.unpack1("m").force_encoding("UTF-8"), ` +
+        // Blank the line rather than delete it, so the spec.rb:N locations the runner
+        // reports still line up with what the learner sees in the pane.
+        `spec: ${JSON.stringify(toBase64(spec))}.unpack1("m").force_encoding("UTF-8").gsub(/^require_relative.*/, ""), ` +
         `subject: ${JSON.stringify(subject)})`;
       return JSON.parse(vm.eval(code).toString()) as KataResult;
     },

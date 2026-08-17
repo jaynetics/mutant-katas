@@ -11,6 +11,8 @@ require "kramdown-parser-gfm"
 # them directly. Parsing is done with kramdown (GFM) so that, for example, a `#`
 # comment inside a code block is never mistaken for a section heading.
 module Kata
+  EDITABLE = %w[source spec].freeze
+
   module_function
 
   # Parse a file into a kata hash; id is the filename stem.
@@ -21,34 +23,38 @@ module Kata
   end
 
   # Parse markdown into: { "id", "meta" => {title, subject, editable, difficulty,
-  # concepts}, "source", "spec", "solution" => {source, spec}, "explanation" }.
+  # concepts}, "source", "spec", "solution", "explanation" }.
   def parse(id, markdown)
     fm, body = split_frontmatter(markdown)
     meta = YAML.safe_load(fm)
     secs = sections(body)
 
-    source   = first_code(secs, "source")
-    spec     = first_code(secs, "spec")
-    solution = secs.fetch("solution", [])
+    source = first_code(secs, "source")
+    spec   = first_code(secs, "spec")
 
     {
       "id" => id,
       "meta" => {
         "title"      => meta.fetch("title"),
         "subject"    => meta.fetch("subject"),
-        "editable"   => meta.fetch("editable"),
+        "editable"   => editable(meta),
         "difficulty" => meta.fetch("difficulty"),
         "concepts"   => meta.fetch("concepts")
       },
       "source" => source,
       "spec"   => spec,
-      # Omitted solution files inherit the starting buffer.
-      "solution" => {
-        "source" => sub_code(solution, "source") || source,
-        "spec"   => sub_code(solution, "spec") || spec
-      },
+      # The reference version of whichever buffer the learner edits.
+      "solution" => first_code(secs, "solution"),
       "explanation" => elements_to_html(secs["explanation"])
     }
+  end
+
+  # A kata hands the learner one buffer to edit, so this names a single file.
+  def editable(meta)
+    value = meta.fetch("editable")
+    return value if EDITABLE.include?(value)
+
+    raise "editable must be #{EDITABLE.join(" or ")}, got #{value.inspect}"
   end
 
   # "---\n<yaml>\n---\n<body>"
@@ -90,12 +96,6 @@ module Kata
 
   def code(elements)
     elements.find { |e| e.type == :codeblock }&.value&.chomp
-  end
-
-  # A "## source"/"## spec" subsection's code block within the solution elements.
-  def sub_code(elements, name)
-    index = elements.index { |e| header?(e, 2) && heading_text(e) == name }
-    index && code(elements[(index + 1)..])
   end
 
   # Render a section's elements to HTML (used for the explanation). Backtick code

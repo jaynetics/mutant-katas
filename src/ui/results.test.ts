@@ -8,14 +8,40 @@ describe("renderResult", () => {
     root = document.createElement("div")
   })
 
+  const failure = {
+    description: "Person#adult? age 18",
+    location: "spec.rb:4",
+    message: "expected: true\n     got: false\n\n(compared using ==)",
+  }
+
   it("gates on a red suite", () => {
-    const r = renderResult(root, {
-      status: "red",
-      failures: ["Person#adult? age 18"],
-    })
+    const r = renderResult(root, {status: "red", failures: [failure]})
     expect(r.solved).toBe(false)
     expect(root.textContent).toContain("make your tests pass")
     expect(root.textContent).toContain("age 18")
+  })
+
+  it("shows each failing spec's location and full message", () => {
+    renderResult(root, {status: "red", failures: [failure]})
+    const card = root.querySelector(".failure")!
+    expect(card.querySelector(".location")?.textContent).toBe("spec.rb:4")
+    const message = card.querySelector(".failure-message")
+    expect(message?.textContent).toContain("expected: true")
+    expect(message?.textContent).toContain("got: false")
+    expect(message?.textContent).toContain("(compared using ==)")
+    expect(message?.tagName).toBe("PRE") // keeps RSpec's own layout and diff
+  })
+
+  it("lists every failing spec", () => {
+    renderResult(root, {
+      status: "red",
+      failures: [failure, {...failure, description: "Person#adult? age 17"}],
+    })
+    const cards = [...root.querySelectorAll(".failure")]
+    expect(cards.map((c) => c.querySelector(".failure-title")?.textContent)).toEqual([
+      "Person#adult? age 18",
+      "Person#adult? age 17",
+    ])
   })
 
   it("shows only surviving-mutant diffs when green (no killed count)", () => {

@@ -1,7 +1,7 @@
 ---
 title: "Hash access"
 subject: "Settings#timeout"
-editable: [spec]
+editable: spec
 difficulty: 3
 concepts: [hash-access, missing-key]
 ---
@@ -32,8 +32,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Settings, '#timeout' do
   it "returns the configured timeout" do
@@ -48,4 +46,4 @@ end
 
 # explanation
 
-`@values[:timeout]` and `@values.fetch(:timeout)` behave identically when the key is present, so a spec that supplies the key can't tell them apart. They differ only on a missing key: `[]` returns `nil`, `fetch` raises `KeyError`. Adding a test for the absent-key case pins `[]` as lookup method.
+`@values[:timeout]` and `@values.fetch(:timeout)` return the same thing while the key is present, so a spec that always supplies it cannot tell them apart. They differ when the key is missing: `#[]` returns nil and `#fetch` raises `KeyError`. Add an example for the missing key.

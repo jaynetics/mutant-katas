@@ -53,8 +53,11 @@ RSpec.describe "katas" do
       subject    = kata.dig("meta", "subject")
       start      = kata["source"]
       start_spec = kata["spec"]
-      sol_source = kata.dig("solution", "source")
-      sol_spec   = kata.dig("solution", "spec")
+      # The solution replaces the one buffer the kata lets the learner edit; the other
+      # stays as it starts. Real mutant needs both files either way.
+      editable   = kata.dig("meta", "editable")
+      sol_source = editable == "source" ? kata["solution"] : start
+      sol_spec   = editable == "spec" ? kata["solution"] : start_spec
 
       sol_alive   = KataValidation.fork_alive(source: sol_source, spec: sol_spec, subject: subject)
       start_alive = KataValidation.fork_alive(source: start, spec: start_spec, subject: subject)

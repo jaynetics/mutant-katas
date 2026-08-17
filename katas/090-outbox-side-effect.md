@@ -1,7 +1,7 @@
 ---
 title: "Side effects"
 subject: "Outbox#deliver"
-editable: [spec]
+editable: spec
 difficulty: 5
 concepts: [side-effects, collaborators, multi-step]
 ---
@@ -33,8 +33,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Outbox, '#deliver' do
   it "records the message and returns :ok" do
@@ -49,4 +47,4 @@ end
 
 # explanation
 
-The method has two jobs: append the message and return `:ok`. Mutant can delete the append line entirely and the method still returns `:ok`, so a test that only checks the return value never notices. Catching it takes a multi-step assertion: pass in a "spy" or "collaborator" (the `sent` array), perform the action, then inspect the collaborator's state afterwards. Assert the effect, not just the return value.
+The `#deliver` method has two jobs: append the message and return `:ok`. Mutant can delete the append line entirely and the method still returns `:ok`, so a test that only checks the return value never notices the change. Assign an array to a variable, pass it to a new Outbox as a "spy" or "collaborator", perform the delivery, and then assert that the array contains the message. Test the side-effect, not just the return value.

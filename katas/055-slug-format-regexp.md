@@ -1,7 +1,7 @@
 ---
 title: "String methods"
 subject: "Slug#to_s"
-editable: [spec]
+editable: spec
 difficulty: 3
 concepts: [string-methods, gsub-vs-sub]
 ---
@@ -32,8 +32,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Slug, '#to_s' do
   it "lowercases and dashes a simple title" do
@@ -44,4 +42,4 @@ end
 
 # explanation
 
-Testing with a title with single spaces does not cover the case where the quantifier (`+`) in the regexp is exercised. Use a title with multiple spaces to pin this behavior.
+With single spaces, / +/ and / / match the same thing, so removing the + changes nothing. Use a title with several spaces in a row.

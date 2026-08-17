@@ -1,7 +1,7 @@
 ---
 title: "Arithmetic operators"
 subject: "Stopwatch#elapsed"
-editable: [spec]
+editable: spec
 difficulty: 3
 concepts: [arithmetic-operators, operands]
 ---
@@ -33,8 +33,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Stopwatch, '#elapsed' do
   it "measures the time from start to end" do
@@ -49,4 +47,4 @@ end
 
 # explanation
 
-Starting from `0` hides the operator: `@end - @start` and `@end + @start` both give `10` when the start is `0`, so mutant's `- → +` mutation survives. A start time that isn't zero (and differs from the result) distinguishes subtraction from the other operators and from swapping the operands.
+With a start of 0, `@end - @start` gives the same answer as `@end + @start` as well as `@end` on its own, so both of those mutations survive. Use a start that is not zero.

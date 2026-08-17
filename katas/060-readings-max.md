@@ -1,7 +1,7 @@
 ---
 title: "Orthogonal methods"
 subject: "Readings#peak"
-editable: [spec]
+editable: spec
 difficulty: 3
 concepts: [orthogonal-methods, ordering]
 ---
@@ -32,8 +32,6 @@ end
 
 # solution
 
-## spec
-
 ```ruby
 RSpec.describe Readings, '#peak' do
   it "returns the largest reading, wherever it sits" do
@@ -44,4 +42,4 @@ end
 
 # explanation
 
-Mutant replaces `max` with `min`, `first`, and `last`. With a single reading all four return the same value, so the test can't distinguish them. Using several readings with the largest one in the middle (not first or last) forces `max`.
+Mutant replaces `max` with `min`, `first`, and `last`. With a single reading all of those return the same value, so the example passes either way. Use several readings and put the largest one in the middle, so it is neither the first nor the last element.

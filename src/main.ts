@@ -1,5 +1,5 @@
 import { loadKatas } from "./katas/load";
-import { markSolved, isSolved } from "./ui/completion";
+import { markSolved, isSolved, rememberKata, resumeIndex, completesEveryKata } from "./ui/completion";
 import { mountEditors, type EditorHandles } from "./ui/editor";
 import { renderResult } from "./ui/results";
 import { bootRuntime, type Runtime } from "./runtime/bridge";
@@ -44,6 +44,7 @@ function updateNav() {
 function open(i: number) {
   index = i;
   const kata = katas[i];
+  rememberKata(kata.id); // so a refresh reopens this kata, not the furthest one reached
   $("#progress").textContent = `Kata ${i + 1} of ${katas.length}`;
   $("#kata-title").textContent = kata.meta.title;
   handles = mountEditors($("#editors"), kata);
@@ -74,12 +75,18 @@ async function run() {
       spec: handles.getSpec(),
       subject: kata.meta.subject,
     });
-    // A joyful message when this solve completes the whole set.
+    // A joyful message when this solve finishes the set, which only the last kata can do.
     const willSolve = result.status === "green" && result.alive.length === 0;
-    const completesAll = willSolve && katas.every((k) => k.id === kata.id || isSolved(k.id));
-    const { solved } = renderResult($("#results"), result, completesAll ? FINAL_MESSAGE : undefined);
+    const finishes = willSolve && completesEveryKata(katas.map((k) => k.id), index);
+    const { solved } = renderResult($("#results"), result, finishes ? FINAL_MESSAGE : undefined);
     if (solved) markSolved(kata.id); // the explanation is revealed only via the Hint button
     updateNav();
+  } catch (error) {
+    // A failure inside the VM (its linear memory only ever grows, and past ~2 GB the JS
+    // bridge throws) escapes Ruby's own rescue. Without this the button would just be
+    // re-enabled with nothing rendered, which reads as "Run does nothing".
+    const message = error instanceof Error ? error.message : String(error);
+    renderResult($("#results"), { status: "error", message: `${message} — reload the page to continue.` });
   } finally {
     btn.disabled = false;
     btn.classList.remove("running");
@@ -87,9 +94,7 @@ async function run() {
   }
 }
 
-// Resume at the first unsolved kata (or the last one if all are solved).
-const firstUnsolved = katas.findIndex((k) => !isSolved(k.id));
-open(firstUnsolved === -1 ? katas.length - 1 : firstUnsolved);
+open(resumeIndex(katas.map((k) => k.id)));
 
 $("#run").addEventListener("click", run);
 $("#hint").addEventListener("click", () => {
@@ -99,8 +104,9 @@ $("#hint").addEventListener("click", () => {
 $("#show-solution").addEventListener("click", () => {
   if (!handles) return;
   const kata = katas[index];
-  handles.setSource(kata.solution.source);
-  handles.setSpec(kata.solution.spec);
+  // The solution is the reference version of the editable buffer; the other one never changes.
+  if (kata.meta.editable === "source") handles.setSource(kata.solution);
+  else handles.setSpec(kata.solution);
   $<HTMLDivElement>("#explanation").hidden = false; // solution comes with the explanation
 });
 $("#prev").addEventListener("click", () => open(index - 1));

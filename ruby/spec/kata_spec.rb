@@ -7,7 +7,7 @@ RSpec.describe Kata do
     ---
     title: "Boundary values"
     subject: "Person#adult?"
-    editable: [spec]
+    editable: spec
     difficulty: 1
     concepts: [boundary-values, equality-mutations]
     ---
@@ -28,8 +28,6 @@ RSpec.describe Kata do
 
     # solution
 
-    ## spec
-
     ```ruby
     RSpec.describe(Person) { it("18") { } }
     ```
@@ -49,7 +47,7 @@ RSpec.describe Kata do
     expect(kata["meta"]).to eq(
       "title" => "Boundary values",
       "subject" => "Person#adult?",
-      "editable" => ["spec"],
+      "editable" => "spec",
       "difficulty" => 1,
       "concepts" => %w[boundary-values equality-mutations]
     )
@@ -60,9 +58,17 @@ RSpec.describe Kata do
     expect(kata["spec"]).to include('it("17")')
   end
 
-  it "builds full solution buffers, inheriting omitted files" do
-    expect(kata["solution"]["spec"]).to include('it("18")')      # from ## spec
-    expect(kata["solution"]["source"]).to eq(kata["source"])     # inherited (no ## source)
+  it "extracts the solution for the editable buffer" do
+    expect(kata["solution"]).to include('it("18")')
+  end
+
+  # A kata edits one buffer, so a stale `editable: [spec]` has to fail at compile time
+  # rather than leave the app with a pane nobody can type in.
+  it "rejects an editable entry that is not source or spec" do
+    %w([spec] specs "" nil).each do |value|
+      broken = markdown.sub("editable: spec", "editable: #{value}")
+      expect { described_class.parse("x", broken) }.to raise_error(/editable/)
+    end
   end
 
   it "renders the explanation as HTML: backticks -> <code>, and escapes it" do
