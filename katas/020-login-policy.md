@@ -41,4 +41,4 @@ end
 
 # explanation
 
-The spec only covers the two cases where both flags agree, true/true and false/false. For those, &&, ||, @active on its own and @verified on its own all give the same answers, allowing for three mutations. Cover the mixed cases, true/false and false/true, where the choice of boolean operator does affect the result.
+The spec only covers the two cases where both flags agree, true/true and false/false. For those, `&&`, `||`, `@active` on its own and `@verified` on its own all give the same answers, allowing for three mutations. Cover the mixed cases, true/false and false/true, where the choice of boolean operator does affect the result.
