@@ -2,6 +2,8 @@
 
 Mutant Katas is a browser-based set of exercises for learning mutation testing in Ruby. Each kata presents a small piece of Ruby code together with a test suite. The learner improves the tests until they detect every change ("mutation") that the [mutant](https://github.com/mbj/mutant) gem can make to the code. Everything runs in the browser; there is no server.
 
+Try it at https://janosch.online/mutant-katas
+
 ## Design goals
 
 - Run the mutant gem in the browser, for real mutation testing without a server.
